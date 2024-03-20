@@ -1,0 +1,1 @@
+docker-compose -f redis_cluster.compose up -d
