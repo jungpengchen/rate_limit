@@ -3,14 +3,13 @@ import threading
 import redis
 import os
 from models.Models import Budget, Param
-
-os.environ['PYTHONIOENCODING'] = 'UTF-8'
+from repositories.Redis import r
 
 
 class FixedWindowCounter:
-    def __init__(self, db: redis.Redis, budget: Budget) -> None:
-        assert isinstance(db, redis.Redis)
-        self.db = db
+    def __init__(self, budget: Budget) -> None:
+        assert isinstance(r, redis.Redis)
+        self.db = r
         self.interval_ms = budget.interval_ms
         self.lock = threading.Lock()
         self.name = budget.name
