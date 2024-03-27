@@ -4,6 +4,7 @@ from repositories.Redis import close_connection
 from algorithm.LuaTokenBudget import Param, Budget, TokenBudget
 from algorithm.SlidingWindow import SlidingWindow
 from algorithm.FixedWindow import FixedWindowCounter
+from services.Chat import invoke
 from test_case.TestCase import api_keys
 
 router = APIRouter(prefix="/test", tags=["Test"])
@@ -17,10 +18,11 @@ counters = [FixedWindowCounter(m) for m in budget_models]
 async def test_request_token_budget(param: Param):
     for b in budgets:
         if b.check_and_eat(param):
+            invoke(b.name, param)
             await asyncio.sleep(param.latency)  # lantency
             b.check_and_release(param.amount)
             return "success"
-    return 500, "failed"
+    return 429, "failed"
 
 
 @router.post("/test/fixed_window/llm_request/")
@@ -29,6 +31,7 @@ async def test_request_fixed_window(param: Param):
     for c in counters:
         if c.check_and_eat(param):
             # print(req_id,"OK",c.name)
+            invoke(c.name, param)
             await asyncio.sleep(param.latency)  # lantency
             return "success"
         # else:
@@ -52,6 +55,7 @@ async def test_request_sliding_window(param: Param):
         # print(j,token_limit)
 
         if sw.is_request_allowed(event_name, token_limit):
+            invoke(b.name, param)
             sw.add_request(event_name, token_cost, latency)
             return "success"
     return 500, "failed"
