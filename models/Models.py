@@ -12,3 +12,4 @@ class Param(BaseModel):
     amount: int = 500
     force: bool = False
     latency: int = 5
+    example_ch_count: int = 2950
