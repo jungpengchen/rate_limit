@@ -56,7 +56,7 @@ async def test_request_sliding_window(param: Param):
 
         if sw.is_request_allowed(event_name, token_limit):
             invoke(b.name, param)
-            sw.add_request(event_name, token_cost, latency)
+            sw.add_request(event_name, token_cost)
             return "success"
     return 500, "failed"
 

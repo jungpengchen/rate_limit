@@ -15,7 +15,7 @@ def generate_request_id(event_name):
 
 
 class SlidingWindow:
-    def add_request(event_name, token_cost, latency=60):
+    def add_request(self, event_name, token_cost, latency=60):
         current_time = time.time()
         request_id = generate_request_id(event_name)
 
@@ -25,7 +25,7 @@ class SlidingWindow:
 
         return request_id, current_time
 
-    def is_request_allowed(event_name, token_limit=3000):
+    def is_request_allowed(self, event_name, token_limit=3000):
         min_timestamp = time.time() - 60  # 過去 60 秒
 
         r.zremrangebyscore(event_name, '-inf', min_timestamp)
